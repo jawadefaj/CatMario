@@ -2,7 +2,7 @@ from input import capture_input
 from neat.nn.feed_forward import FeedForwardNetwork # for the 'network' parameter
 from output import press_keys
 import win32gui
-import time, cv2
+import time, cv2, math
 
 DIS_UPDATE_THRESHOLD = 0.0
 ACTION_SELECT_THRESHOLD = 0.7
@@ -19,34 +19,49 @@ def run_game(program_name, network):
 	last_frame_timestamp = 0
 	cat_travel_dis = 0  # subtract when cat moves left, increment when cat moves right
 	last_img_obj_corners = []
+	
 
+	up_count = 0
+	right_count = 0
+	down_count = 0
+	left_count = 0
 	while not cat_is_dead:
 		input_matrix, img_obj_corners, cat_is_dead = capture_input(program_name)
 		if (time.time() - last_frame_timestamp) > DIS_UPDATE_THRESHOLD:
 			cat_travel_dis += distance_update(last_img_obj_corners, img_obj_corners)
-		last_frame_timestamp = time.time()
+			print("++++++ " , cat_travel_dis)
+			last_img_obj_corners = img_obj_corners
+			last_frame_timestamp = time.time()
 		input_list = matrix_to_list(input_matrix)
 		# return list of floats(one for each out_node)
 
 		output_list = network.activate(input_list)
+
 		new_keys_pressed = action_decision(output_list)
 		# we have focus the program so need to put program_name in press_key
-		press_keys(last_keys_pressed, new_keys_pressed)
-
-		fitness = calculate_fitness(cat_travel_dis)
+		up_count, right_count, down_count, left_count = press_keys(last_keys_pressed, new_keys_pressed, up_count, right_count, down_count, left_count)
+		#print("+++++", up_count, right_count, down_count, left_count)
+		# print(up_count)
+		# print(right_count)
+		fitness = calculate_fitness(cat_travel_dis, up_count, right_count, down_count, left_count)
+		#print(fitness)
 		max_fitness = max(fitness, max_fitness)
 		last_keys_pressed = new_keys_pressed
 	return max_fitness
 
 
-def calculate_fitness(cat_travel_dis):
+def calculate_fitness(cat_travel_dis, up_count, right_count, down_count, left_count):
 	# different fitness function later
-	return cat_travel_dis
+	fitness = cat_travel_dis + up_count + right_count - down_count - left_count
+	return fitness
 
 
 def distance_update(last_img_obj_corners, img_obj_corners):
 	corner_travels = []
-
+	# print('last_img_obj_corners')
+	# print(last_img_obj_corners)
+	# print('img_obj_corners')
+	# print(img_obj_corners)
 	for corner in img_obj_corners:
 		x1, y1 = corner.ravel()
 		x0, y0 = 0, 0
@@ -65,9 +80,13 @@ def distance_update(last_img_obj_corners, img_obj_corners):
 
 		corner_travels.append(dx[distance.index(min(distance))] * dirs[
 			distance.index(min(distance))])
+
 	corner_travels.sort()
+	#print("+=+=+=+++===",corner_travels)
 	cat_dx = sum(corner_travels[int(len(corner_travels) / 2) - 5:int(
 		len(corner_travels) / 2) + 5]) / 10
+
+	#print("cat distance ", cat_dx)
 	return cat_dx
 
 
@@ -93,12 +112,13 @@ def action_decision(output_list):
 		else:
 			new_keys_pressed[0] = 0
 
+	#print("++++++++++++++++new_keys_pressed++++++++++++++++++")
+	#print(new_keys_pressed)
 	return new_keys_pressed
 
 
 def matrix_to_list(matrix):
 	lst = []
 	for row in matrix:
-                
-                lst += [float(value) for value in row]
+        			lst += [float(value) for value in row]
 	return lst
