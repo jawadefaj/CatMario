@@ -6,7 +6,7 @@ def capture_input(program_name):
 	game_bgr, cat_view_bgr, input_matrix, matrix_img, img_obj_corners, cat_is_dead = capture_cat_mario(program_name)
 
 	monitor(game_bgr, cat_view_bgr, matrix_img)
-	
+
 	return input_matrix, img_obj_corners, cat_is_dead
 
 
