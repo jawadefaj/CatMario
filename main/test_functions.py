@@ -1,11 +1,12 @@
-from game_running import open_game
+from game_running import start_game
 
 
 def main():
-	open_game()
-
+	start_game()
 
 
 if __name__ == '__main__':
 
+
 	main()
+

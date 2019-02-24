@@ -9,11 +9,10 @@ import pyautogui
 DIS_UPDATE_THRESHOLD = 0.0
 ACTION_SELECT_THRESHOLD = 0.7
 RESTART_THRESHOLD = 5.0
-GAME_DIR = r'SyobonAction\OpenSyobonAction.exe'
 
 
-def run_game(program_name, network):
-	open_game()
+def run_game(program_name, network, lib=True):
+	start_game(program_name)
 	focus_program(program_name)
 
 	# initialization
@@ -47,8 +46,9 @@ def run_game(program_name, network):
 			print("Killing and RESTART")
 			flag = True
 			kill_game()
-			open_game()
+			start_game()
 			break
+
 		last_img_obj_corners = img_obj_corners
 		last_frame_timestamp = time.time()
 		input_list = matrix_to_list(input_matrix)
@@ -102,16 +102,14 @@ def focus_program(program_name):
 	win32gui.SetForegroundWindow(window_handle)
 
 
-def open_game():
-	# cwd = os.getcwd()
-	# os.chdir("C:\\Users\\abjaw\\Downloads\\SyobonAction_rc2_win32bin")
-	# os.startfile("C:\\Users\\abjaw\\Downloads\\SyobonAction_rc2_win32bin\\OpenSyobonAction.exe")
-	# time.sleep(1.0)
-	# os.chdir(cwd)
-	os.startfile(GAME_DIR)
-	# time.sleep(10.0)
-	# pyautogui.keyDown('enter')
-	# pyautogui.keyUp('enter')
+def start_game(program_name='Syobon Action (しょぼんのアクション)'):
+	cwd = os.getcwd()
+	os.chdir('SyobonAction')
+	os.startfile('OpenSyobonAction.exe')
+	time.sleep(1.5)
+	os.chdir(cwd)
+	pyautogui.keyDown('enter')
+	pyautogui.keyUp('enter')
 
 
 def kill_game():
