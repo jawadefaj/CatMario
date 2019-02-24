@@ -12,11 +12,9 @@
 #pip3 install keyboard
 #pip install pynput
 
-import cv2, time, keyboard, os, sys, math
+import cv2, time, keyboard
 import numpy as np
-from matplotlib import pyplot as plt
 from PIL import ImageGrab
-from pynput.keyboard import Key, Controller
 import win32gui, win32ui, win32con
 
 def capture_cat_mario(program_name):

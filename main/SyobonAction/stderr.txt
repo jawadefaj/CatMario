@@ -1,0 +1,2 @@
+Unable to init SDL_mixer: DirectSound CreateSoundBuffer: Invalid parameter
+Error: Unable to load res/player.PNG: Couldn't open res/player.PNG

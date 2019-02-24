@@ -9,9 +9,11 @@ import pyautogui
 DIS_UPDATE_THRESHOLD = 0.0
 ACTION_SELECT_THRESHOLD = 0.7
 RESTART_THRESHOLD = 5.0
+GAME_DIR = r'SyobonAction\OpenSyobonAction.exe'
+
 
 def run_game(program_name, network):
-	# todo: open the game program
+	open_game()
 	focus_program(program_name)
 
 	# initialization
@@ -101,13 +103,16 @@ def focus_program(program_name):
 
 
 def open_game():
-	cwd = os.getcwd()
-	os.chdir("C:\\Users\\abjaw\\Downloads\\SyobonAction_rc2_win32bin")
-	os.startfile("C:\\Users\\abjaw\\Downloads\\SyobonAction_rc2_win32bin\\OpenSyobonAction.exe")
-	time.sleep(1.0)
-	os.chdir(cwd)
-	pyautogui.keyDown('enter')
-	pyautogui.keyUp('enter')
+	# cwd = os.getcwd()
+	# os.chdir("C:\\Users\\abjaw\\Downloads\\SyobonAction_rc2_win32bin")
+	# os.startfile("C:\\Users\\abjaw\\Downloads\\SyobonAction_rc2_win32bin\\OpenSyobonAction.exe")
+	# time.sleep(1.0)
+	# os.chdir(cwd)
+	os.startfile(GAME_DIR)
+	# time.sleep(10.0)
+	# pyautogui.keyDown('enter')
+	# pyautogui.keyUp('enter')
+
 
 def kill_game():
 	os.system("TASKKILL /F /IM OpenSyobonAction.exe")
@@ -141,6 +146,5 @@ def action_decision(output_list):
 def matrix_to_list(matrix):
 	lst = []
 	for row in matrix:
-                
-                lst += [float(value) for value in row]
+		lst += [float(value) for value in row]
 	return lst

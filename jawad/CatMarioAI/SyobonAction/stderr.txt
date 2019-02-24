@@ -1,1 +1,0 @@
-Unable to init SDL_mixer: DirectSound CreateSoundBuffer: Invalid parameter
