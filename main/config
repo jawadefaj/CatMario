@@ -3,15 +3,16 @@
 # are taken care of
 
 [NEAT]
-fitness_criterion     = max
-fitness_threshold     = 3.9
-pop_size              = 150
-reset_on_extinction   = False
+fitness_criterion      = max
+fitness_threshold      = 1
+no_fitness_termination = True
+pop_size               = 5
+reset_on_extinction    = 0
 
 [DefaultGenome]
 # node activation options
 activation_default      = sigmoid
-activation_mutate_rate  = 0.0
+activation_mutate_rate  = 0.5
 activation_options      = sigmoid
 
 # node aggregation options
