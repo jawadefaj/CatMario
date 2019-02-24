@@ -30,7 +30,7 @@ def run_game(program_name, network):
 
 		output_list = network.activate(input_list)
 		new_keys_pressed = action_decision(output_list)
-		# we have focus the program so need to put program_name in press_key
+		# we have focus the program so no need to put program_name in press_key
 		press_keys(last_keys_pressed, new_keys_pressed)
 
 		fitness = calculate_fitness(cat_travel_dis)
