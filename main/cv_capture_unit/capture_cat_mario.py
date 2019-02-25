@@ -24,7 +24,7 @@ def capture_cat_mario(program_name):
         #os.startfile("SyobonAction\OpenSyobonAction.exe")
         try:
             #modified from: https://www.programcreek.com/python/example/89821/win32gui.GetWindowDC (Example 8)
-            hwnd = win32gui.FindWindow(None, "Syobon Action (??????????)")  #The "???????" are actually Japanese char
+            hwnd = win32gui.FindWindow(None, program_name)  #The "???????" are actually Japanese char
             #hwnd = win32gui.FindWindow(None, "Syobon Action (??????????)")
             rect = win32gui.GetWindowRect(hwnd)
             w = rect[2]-rect[0]
@@ -278,42 +278,6 @@ def capture_cat_mario(program_name):
     
     game_corners = np.int0(cv2.goodFeaturesToTrack(cat_view_gray, 30, 0.01, 10))
 
-
-    #initizlize the following outside of the main loop
-    # frame_timestamp = 0
-    # cat_travel_dis = 0
-    # game_corners_0 = []
-
-    """
-    corner_travels = []
-    if(time.time()- frame_timestamp > 0.05): #frame refresh time
-        for corner in game_corners:
-            x1,y1 = corner.ravel()
-            x0,y0 = 0,0
-            cv2.circle(cat_view_bgr,(x1,y1),3,255,-1)
-            distance = [1000]
-            dirs = [0]
-            dx = [0]
-            for corner_0 in game_corners_0:
-                x0,y0 = corner_0.ravel()
-                distance.append(math.sqrt((x1-x0)**2+(y1-y0)**2))
-                dx.append(abs(x1-x0))
-                if x1>x0:
-                    dirs.append(-1)
-                else:
-                    dirs.append(1)
-            
-            corner_travels.append(dx[distance.index(min(distance))]*dirs[distance.index(min(distance))])                
-        game_corners_0 = game_corners.copy()
-        corner_travels.sort()
-        cat_dx = sum(corner_travels[int(len(corner_travels)/2)-5:int(len(corner_travels)/2)+5])/10
-        cat_travel_dis += int(cat_dx)
-        print("fitness:", cat_travel_dis)
-        frame_timestamp = time.time()
-    """
-
-
-    
     class_matrix = get_matrix_out(cat_view_bgr,CAT_VIEW,BLOCK_COLORS,PIX_COLORS)
     matrix_out = map_matrix(class_matrix, (6,4), 0, 3, 8)
     matrix_img = build_matrix_img(matrix_out, 29)

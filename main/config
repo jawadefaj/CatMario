@@ -7,7 +7,7 @@ fitness_criterion      = max
 fitness_threshold      = 1
 no_fitness_termination = True
 pop_size               = 5
-reset_on_extinction    = 0
+reset_on_extinction    = False
 
 [DefaultGenome]
 # node activation options

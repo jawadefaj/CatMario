@@ -1,42 +1,131 @@
-import neat
-from game_running import run_game
-
-# DO NOT remove the two program names here, comment out the one you don't need
-
-# PROGRAM_NAME = 'Syobon Action (??????????)'
-PROGRAM_NAME = 'Syobon Action (しょぼんのアクション)'
+import speciation
 
 
-def eval_genomes(genomes, config):
-	for genome_id, genome in genomes:
-		network = neat.nn.FeedForwardNetwork.create(genome, config)
-		genome.fitness = run_game(PROGRAM_NAME, network)
+class Neat:
+
+	INPUT_NUM = 169
+	OUTPUT_NUM = 4
+	generation = 1
+
+	max_node_inno = INPUT_NUM + OUTPUT_NUM - 1
+	max_conn_inno = OUTPUT_NUM * INPUT_NUM - 1
+	bias_weight = {} # we don't really need bias connection, imagine we
+	# have one bias node only, also avoid both node and conn innovation numbers
+	speciation = []
+
+	def initialize_nodes(self):
+		# I use (a, b) to represent nodes because each new node is created
+		# between two old nodes and a,b are the two old nodes that the new node
+		# depends. Hence for initial nodes, I just give them (a, a) where a is
+		# there node innovation number.
+
+		# In my encoding, output nodes have innovation number 0 to 3(left, right,
+		# up, down) and the input node have innovation number 4 to 675
+
+		nodes = {}
+		for i in range(self.INPUT_NUM + self.OUTPUT_NUM):
+			nodes[(i,i)] = i
+		return nodes
+
+	def initialize_connections(self):
+		# notice that the index of connections IS the innovation number
+		connections = {}
+		for output_node_i in range(self.OUTPUT_NUM):
+			for j in range(self.INPUT_NUM):
+				input_node_i = j + self.OUTPUT_NUM
+				connections[(input_node_i, output_node_i)] = output_node_i * self.OUTPUT_NUM + j
+		return connections
+
+	node_inno_nums = initialize_nodes()  # storing existed nodes
+	conn_inno_nums = initialize_connections()  # storing existed conn
+
+	#------------class variables above-----------------------------------
+
+	def __init__(self, max_gen, max_pop):
+		self.MAX_GEN = max_gen
+		self.MAX_POP = max_pop
+		self.population = self.initialize_population()
+
+	def initialize_population(self):
+		population = []
+		for i in range(self.MAX_POP):
+			genome = Genome()
+			genome.genes = genome.initialize()
+		return population
+
+	def initialize_speciation(self):
+		# Todo: initialize speciation based on c3*mean_weight only(may need extra threshold)
+		return speciated_population
+
+	def evolve(self):
+		if self.generation == 1:
+			self.speciation = self.initialize_speciation()
+			# Todo: initial_speciation first
+
+		# Todo:calculate adjusted weights, get the proportion of offsprings for each species
+		# Todo: mutate/crossover in each species for getting offsprings
+			# Todo:update self.connections and self.nodes during mutation(important)
+		# Todo: re-speciation
+		# write the above functions in speciation.py(except the mutation/crossover part)
 
 
-def run_library(config_file='config'):
-	config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
-						 neat.DefaultSpeciesSet, neat.DefaultStagnation,
-						 config_file)
+class Genome:
+	def __init__(self, genes=None):
+		# self.genes for easier crossover(order by innovation number)
+		# self.connections for easier computing outputs, details in reorder function
 
-	population = neat.Population(config)
+		if genes:
+			self.genes = genes  # after first generation
+		else:
+			self.genes = self.initialize_genes()  # first generation
+		self.fitness = None
+		self.connections = self.reorder_connections([gene.connection for gene in self.genes])
 
-	# Run for up to n generations.
-	winner = population.run(eval_genomes, 2)
+	def reorder_connections(self, connections):
+		# Todo: connections should be ordered such that the take_value_node's innovation number
+		# Todo:	increases e.g. (5, 0), (6, 0), (7, 1), (8, 3)....
+		# Todo:	keeping this structure is important for calculating output faster
+		return new_connections
+
+	def get_output(self, input_list):
+		# Todo: basically we are computing the NN here.
+		"""
+
+		:param input_list: input from CV_unit
+		:type input_list: list of float
+		:return: output for determine actions
+		:rtype: list of float
+		"""
+		# in_nodes are the one GETTING values from other nodes including output_nodes
+		# out_nodes are the one GIVING values includes input_nodes
+		in_nodes = [node_inno for node_inno in Neat.node_inno_nums.values() if value in range(4)]
+		in_out_total = Neat.INPUT_NUM + Neat.OUTPUT_NUM
+		if len(Neat.node_inno_nums) > in_out_total:
+			in_nodes += [node_inno for node_inno in Neat.node_inno_nums.values() if value in range(in_out_total, len(Neat.node_inno_nums))]
+
+		for in_node, out_node in self.connections:
+			
 
 
-	winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
+
+		return output_list
+
+	def initialize_genes(self):
+		# for new initial genomes only, not for the ones after first generation
+		""""
+		:return: list of genes, 4 * 169 connections with random weights within some range
+		:rtype: list of genes
+
+		"""
+
+		return genes
 
 
-def run_non_library():
-	
+class Gene:
+	def __init__(self, connection, weight):
+		self.connection = connection
+		self.conn_inno = Neat.connections[connection] # assume we have checked the gene in mutation
+		self.disabled = False
+		self.weight = weight
 
-def run(lib=True):
-	run_library() if lib else run_non_library()
-
-def main():
-	run()
-
-
-if __name__ == '__main__':
-	main()
 

@@ -4,63 +4,66 @@ from output import press_keys
 import win32gui
 import time, cv2, math, os
 import pyautogui
+from neat_core.Neat import Genome
 
-
-DIS_UPDATE_THRESHOLD = 0.0
 ACTION_SELECT_THRESHOLD = 0.7
 RESTART_THRESHOLD = 5.0
 
 
 def run_game(program_name, network, lib=True):
-	start_game(program_name)
+	start_game()
 	focus_program(program_name)
 
 	# initialization
 	cat_is_dead = False
 	max_fitness = 0
 	last_keys_pressed = [0, 0, 0, 0]  # left, right , up , down, 0/1: not/pressed
-	last_frame_timestamp = 0
 	cat_travel_dis = 0  # subtract when cat moves left, increment when cat moves right
 	last_img_obj_corners = []
+	trapped_start_time = 0
+	trapped = False
+	last_frame_timestamp = 0
 
-	track_for_trap = 0
-	track_for_trap_time = time.time()
-	flag = True
 	while not cat_is_dead:
+
 		input_matrix, img_obj_corners, cat_is_dead = capture_input(program_name)
-		if (time.time() - last_frame_timestamp) > DIS_UPDATE_THRESHOLD:
-			cat_travel_dis += distance_update(last_img_obj_corners, img_obj_corners)
+		print(cat_is_dead)
+		distance_changed = distance_update(last_img_obj_corners, img_obj_corners)
+		if (time.time() - last_frame_timestamp) > 0:
+			cat_travel_dis += distance_changed
+			last_frame_timestamp = time.time()
 
-		track_for_trap = max(cat_travel_dis, track_for_trap)
-		#print(int(track_for_trap) , int(cat_travel_dis), (last_frame_timestamp - track_for_trap_time))
-
-		if track_for_trap > cat_travel_dis and flag:
-			track_for_trap_time = time.time()
-			print(flag, "making false")
-			flag = False
-		if track_for_trap == cat_travel_dis:
-			#track_for_trap_time = time.time()
-			flag = True
-
-		if (last_frame_timestamp - track_for_trap_time) > RESTART_THRESHOLD and not flag:
-			print("Killing and RESTART")
-			flag = True
-			kill_game()
-			start_game()
-			break
+		checking trapped
+		fitness = calculate_fitness(cat_travel_dis)
+		if not trapped:
+			if fitness <= max_fitness:
+				trapped = True
+				trapped_start_time = time.time()
+			else:
+				max_fitness = fitness
+		if trapped:
+			if fitness > max_fitness:
+				trapped = False
+				max_fitness = fitness
+			else:
+				if time.time() - trapped_start_time >= RESTART_THRESHOLD:
+					print("Killing and RESTART")
+					kill_game()
+					start_game()
+					break
 
 		last_img_obj_corners = img_obj_corners
-		last_frame_timestamp = time.time()
 		input_list = matrix_to_list(input_matrix)
 		# return list of floats(one for each out_node)
 
-		output_list = network.activate(input_list)
+		if lib:
+			output_list = network.activate(input_list)
+		else:
+			# for non_lib version, network here is the genome object
+			output_list = network.get_output(input_list)
 		new_keys_pressed = action_decision(output_list)
 		# we have focus the program so no need to put program_name in press_key
 		press_keys(last_keys_pressed, new_keys_pressed)
-
-		fitness = calculate_fitness(cat_travel_dis)
-		max_fitness = max(fitness, max_fitness)
 		last_keys_pressed = new_keys_pressed
 	return max_fitness
 
@@ -102,7 +105,7 @@ def focus_program(program_name):
 	win32gui.SetForegroundWindow(window_handle)
 
 
-def start_game(program_name='Syobon Action (しょぼんのアクション)'):
+def start_game():
 	cwd = os.getcwd()
 	os.chdir('SyobonAction')
 	os.startfile('OpenSyobonAction.exe')
