@@ -10,12 +10,14 @@ PROGRAM_NAME = 'Syobon Action (??????????)'
 
 def eval_genomes(genomes, config):
 	
-	print("genomes ",len(genomes))
-	for genome_id, genome in genomes:
-		print("ID " , genome_id, len(genome.connections))
+	#print("genomes ",list(genomes))
+	#for genome_id, genome in genomes:
+	for i in range(len(genomes)):
+		time.sleep(1.0)
+		genome_id, genome = genomes[i]
 		network = neat.nn.FeedForwardNetwork.create(genome, config)
-		#print("network " , network)
 		genome.fitness = run_game(PROGRAM_NAME, network)
+		print("ID " , genome_id, genome.fitness)
 	print("Out of the loop")
 
 

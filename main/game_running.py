@@ -13,7 +13,7 @@ RESTART_THRESHOLD = 5.0
 def run_game(program_name, network):
 	# todo: open the game program
 	focus_program(program_name)
-
+	#print("inside run game ", network)
 	# initialization
 	cat_is_dead = False
 	max_fitness = 0
@@ -33,7 +33,7 @@ def run_game(program_name, network):
 		track_for_trap = max(cat_travel_dis, track_for_trap)
 		#print(int(track_for_trap) , int(cat_travel_dis), (last_frame_timestamp - track_for_trap_time))
 
-		if track_for_trap > cat_travel_dis and flag:
+		if track_for_trap >= cat_travel_dis and flag:
 			track_for_trap_time = time.time()
 			print(flag, "making false")
 			flag = False
