@@ -205,8 +205,8 @@ def capture_cat_mario(program_name):
             for block in row:
                 if block != 128:
                     return False
-        if cat_pos != (191,190):
-            return False
+        # if cat_pos != (191,190):
+        #     return False
         return True
         
     #PIL (no longer used)
