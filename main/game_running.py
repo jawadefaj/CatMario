@@ -9,11 +9,13 @@ import pyautogui
 DIS_UPDATE_THRESHOLD = 0.0
 ACTION_SELECT_THRESHOLD = 0.7
 RESTART_THRESHOLD = 5.0
+PROJECT_DIR = r'C:\Users\abjaw\Documents\GitHub\CatMario\main'
 
 def run_game(program_name, network):
 	# todo: open the game program
+	# open_game()
 	focus_program(program_name)
-	#print("inside run game ", network)
+
 	# initialization
 	cat_is_dead = False
 	max_fitness = 0
@@ -22,31 +24,52 @@ def run_game(program_name, network):
 	cat_travel_dis = 0  # subtract when cat moves left, increment when cat moves right
 	last_img_obj_corners = []
 
+	# track_for_trap = 0
+	# track_for_trap_time = time.time()
+	
 	track_for_trap = 0
-	track_for_trap_time = time.time()
+	track_for_trap_time = time.time() + 5.0
+	# last_update = 0
 	flag = True
 	while not cat_is_dead:
 		input_matrix, img_obj_corners, cat_is_dead = capture_input(program_name)
+		# print("cat_is_dead ",cat_is_dead)
 		if (time.time() - last_frame_timestamp) > DIS_UPDATE_THRESHOLD:
 			cat_travel_dis += distance_update(last_img_obj_corners, img_obj_corners)
 
+		if cat_travel_dis>track_for_trap:
+			track_for_trap_time = time.time() + 5.0
+
 		track_for_trap = max(cat_travel_dis, track_for_trap)
 		#print(int(track_for_trap) , int(cat_travel_dis), (last_frame_timestamp - track_for_trap_time))
+		print(track_for_trap_time - time.time(), cat_is_dead, track_for_trap, cat_travel_dis)
+		if time.time() > track_for_trap_time:
+			if track_for_trap > cat_travel_dis:
+				# print("killing for trap", time.time(), track_for_trap_time, track_for_trap, cat_travel_dis)
+				# cat_is_dead = True
+				kill_game()
+				break
+			if track_for_trap == cat_travel_dis:
+				cat_travel_dis -=1
+				# print("counter increase")
+				track_for_trap_time = time.time() + 2.0
 
-		if track_for_trap >= cat_travel_dis and flag:
-			track_for_trap_time = time.time()
-			print(flag, "making false")
-			flag = False
-		if track_for_trap == cat_travel_dis:
-			#track_for_trap_time = time.time()
-			flag = True
+			# last_update = track_for_trap
 
-		if (last_frame_timestamp - track_for_trap_time) > RESTART_THRESHOLD and not flag:
-			print("Killing and RESTART")
-			flag = True
-			kill_game()
-			open_game()
-			break
+		# if track_for_trap >= cat_travel_dis and flag:
+		# 	track_for_trap_time = time.time()
+		# 	# print(flag, "making false")
+		# 	flag = False
+		# if track_for_trap == cat_travel_dis:
+		# 	#track_for_trap_time = time.time()
+		# 	flag = True
+
+		# if (last_frame_timestamp - track_for_trap_time) > RESTART_THRESHOLD and not flag:
+		# 	# print("Killing and RESTART")
+		# 	flag = True
+		# 	kill_game()
+		# 	time.sleep(2.0)
+		# 	break
 		last_img_obj_corners = img_obj_corners
 		last_frame_timestamp = time.time()
 		input_list = matrix_to_list(input_matrix)
@@ -56,10 +79,10 @@ def run_game(program_name, network):
 		new_keys_pressed = action_decision(output_list)
 		# we have focus the program so need to put program_name in press_key
 		press_keys(last_keys_pressed, new_keys_pressed)
-
 		fitness = calculate_fitness(cat_travel_dis)
 		max_fitness = max(fitness, max_fitness)
 		last_keys_pressed = new_keys_pressed
+	# print("Return to the main loop")
 	return max_fitness
 
 
@@ -99,12 +122,15 @@ def focus_program(program_name):
 	window_handle = win32gui.FindWindow(None, program_name)
 	win32gui.SetForegroundWindow(window_handle)
 
+def find_window(program_name):
+	return win32gui.FindWindow(None, program_name)
+		
 
 def open_game():
 	cwd = os.getcwd()
-	os.chdir("C:\\Users\\abjaw\\Downloads\\SyobonAction_rc2_win32bin")
-	os.startfile("C:\\Users\\abjaw\\Downloads\\SyobonAction_rc2_win32bin\\OpenSyobonAction.exe")
-	time.sleep(1.0)
+	os.chdir(PROJECT_DIR + r'\SyobonAction')
+	os.startfile(PROJECT_DIR + r'\SyobonAction' + r'\OpenSyobonAction.exe')
+	time.sleep(2.0)
 	os.chdir(cwd)
 	pyautogui.keyDown('enter')
 	pyautogui.keyUp('enter')
@@ -116,6 +142,7 @@ def kill_game():
 	pyautogui.keyUp('left')
 	pyautogui.keyUp('right')
 	time.sleep(2.0)
+	
 
 
 def action_decision(output_list):

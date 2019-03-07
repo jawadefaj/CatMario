@@ -7,7 +7,7 @@ fitness_criterion      = max
 fitness_threshold      = 1
 no_fitness_termination = True
 pop_size               = 10
-reset_on_extinction    = 0
+reset_on_extinction    = False
 
 [DefaultGenome]
 # node activation options
@@ -76,7 +76,7 @@ compatibility_threshold = 3.0
 
 [DefaultStagnation]
 species_fitness_func = max
-max_stagnation       = 10
+max_stagnation       = 20
 species_elitism      = 2
 
 [DefaultReproduction]
