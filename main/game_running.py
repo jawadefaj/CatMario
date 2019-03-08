@@ -29,9 +29,12 @@ def run_game(program_name, network):
 	
 	track_for_trap = 0
 	track_for_trap_time = time.time() + 5.0
+
+	
 	# last_update = 0
 	flag = True
 	while not cat_is_dead:
+		fps_time = time.time()
 		input_matrix, img_obj_corners, cat_is_dead = capture_input(program_name)
 		# print("cat_is_dead ",cat_is_dead)
 		if (time.time() - last_frame_timestamp) > DIS_UPDATE_THRESHOLD:
@@ -41,8 +44,8 @@ def run_game(program_name, network):
 			track_for_trap_time = time.time() + 5.0
 
 		track_for_trap = max(cat_travel_dis, track_for_trap)
-		#print(int(track_for_trap) , int(cat_travel_dis), (last_frame_timestamp - track_for_trap_time))
-		print(track_for_trap_time - time.time(), cat_is_dead, track_for_trap, cat_travel_dis)
+		# print(int(track_for_trap) , int(cat_travel_dis), (last_frame_timestamp - track_for_trap_time))
+		# print(track_for_trap_time - time.time(), cat_is_dead, track_for_trap, cat_travel_dis)
 		if time.time() > track_for_trap_time:
 			if track_for_trap > cat_travel_dis:
 				# print("killing for trap", time.time(), track_for_trap_time, track_for_trap, cat_travel_dis)
@@ -54,22 +57,7 @@ def run_game(program_name, network):
 				# print("counter increase")
 				track_for_trap_time = time.time() + 2.0
 
-			# last_update = track_for_trap
 
-		# if track_for_trap >= cat_travel_dis and flag:
-		# 	track_for_trap_time = time.time()
-		# 	# print(flag, "making false")
-		# 	flag = False
-		# if track_for_trap == cat_travel_dis:
-		# 	#track_for_trap_time = time.time()
-		# 	flag = True
-
-		# if (last_frame_timestamp - track_for_trap_time) > RESTART_THRESHOLD and not flag:
-		# 	# print("Killing and RESTART")
-		# 	flag = True
-		# 	kill_game()
-		# 	time.sleep(2.0)
-		# 	break
 		last_img_obj_corners = img_obj_corners
 		last_frame_timestamp = time.time()
 		input_list = matrix_to_list(input_matrix)
@@ -81,6 +69,8 @@ def run_game(program_name, network):
 		press_keys(last_keys_pressed, new_keys_pressed)
 		fitness = calculate_fitness(cat_travel_dis)
 		max_fitness = max(fitness, max_fitness)
+		if 1.0/(time.time() - fps_time) < 20.0:
+			print(last_keys_pressed, new_keys_pressed, 1.0/(time.time() - fps_time))
 		last_keys_pressed = new_keys_pressed
 	# print("Return to the main loop")
 	return max_fitness
@@ -136,6 +126,7 @@ def open_game():
 	pyautogui.keyUp('enter')
 
 def kill_game():
+	# pyautogui.PAUSE = 1
 	os.system("TASKKILL /F /IM OpenSyobonAction.exe")
 	pyautogui.keyUp('up')
 	pyautogui.keyUp('down')
@@ -157,10 +148,10 @@ def action_decision(output_list):
 			new_keys_pressed[0] = 0
 
 	if (new_keys_pressed[2], new_keys_pressed[3]) == (1, 1):
-		if output_list[2] >= output_list[3]:
-			new_keys_pressed[1] = 0
+		if output_list[2] > output_list[3]:
+			new_keys_pressed[3] = 0
 		else:
-			new_keys_pressed[0] = 0
+			new_keys_pressed[2] = 0
 
 	return new_keys_pressed
 

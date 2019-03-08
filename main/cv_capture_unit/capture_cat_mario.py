@@ -221,12 +221,12 @@ def capture_cat_mario(program_name):
 
 
     def check_death(cat_pos, matrix_out, backgound_val):
+        if cat_pos[0]<185 or cat_pos[0]>195 or cat_pos[1] < 185 or cat_pos[1]>195:
+             return False
         for row in matrix_out:
             for block in row:
-                if block != 128:
-                    return False
-        # if cat_pos != (191,190):
-        #     return False
+                if block != backgound_val:
+                    return False    
         return True
         
     #PIL (no longer used)
