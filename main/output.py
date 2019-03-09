@@ -41,7 +41,7 @@ def press_keys(last_keys_pressed, new_keys_pressed):
 	if down_pair == (0, 1):
 		pyautogui.keyDown('down')
 
-	pyautogui.PAUSE = 0.1
+	# pyautogui.PAUSE = 0.1
 
 	# if left_pair == (1, 0):
 	# 	keyboard.KEY_UP = 'left'

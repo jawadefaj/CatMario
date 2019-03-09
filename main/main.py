@@ -18,7 +18,7 @@ import datetime
 PROGRAM_NAME = 'Syobon Action (??????????)'
 #PROGRAM_NAME = 'Syobon Action (しょぼんのアクション)'
 LOG_FILE_NAME = ''
-TOTAL_GENERATION = 100
+TOTAL_GENERATION = 34
 CUR_GENERATION = 0
 
 def eval_genomes(genomes, config):

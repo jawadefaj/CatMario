@@ -45,7 +45,7 @@ def run_game(program_name, network):
 
 		track_for_trap = max(cat_travel_dis, track_for_trap)
 		# print(int(track_for_trap) , int(cat_travel_dis), (last_frame_timestamp - track_for_trap_time))
-		# print(track_for_trap_time - time.time(), cat_is_dead, track_for_trap, cat_travel_dis)
+		print(track_for_trap_time - time.time(), cat_is_dead, track_for_trap, cat_travel_dis)
 		if time.time() > track_for_trap_time:
 			if track_for_trap > cat_travel_dis:
 				# print("killing for trap", time.time(), track_for_trap_time, track_for_trap, cat_travel_dis)
@@ -69,8 +69,8 @@ def run_game(program_name, network):
 		press_keys(last_keys_pressed, new_keys_pressed)
 		fitness = calculate_fitness(cat_travel_dis)
 		max_fitness = max(fitness, max_fitness)
-		if 1.0/(time.time() - fps_time) < 20.0:
-			print(last_keys_pressed, new_keys_pressed, 1.0/(time.time() - fps_time))
+		# if 1.0/(time.time() - fps_time) < 20.0:
+		# 	print(last_keys_pressed, new_keys_pressed, 1.0/(time.time() - fps_time))
 		last_keys_pressed = new_keys_pressed
 	# print("Return to the main loop")
 	return max_fitness
@@ -132,6 +132,7 @@ def kill_game():
 	pyautogui.keyUp('down')
 	pyautogui.keyUp('left')
 	pyautogui.keyUp('right')
+	pyautogui.PAUSE = 0.1
 	time.sleep(2.0)
 	
 
