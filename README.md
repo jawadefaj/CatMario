@@ -11,3 +11,6 @@ Most gaming AIs were developed and embedded in its host game that grant them dir
 ## NEAT (Neuroevolution of augmenting topologies)
 
 NEAT combines the uses of genetic algorithm and NN. At each generation (loop over list of NN), we will get a fitness(reward) for how each genome (NN) perform our task. Then the genome with least performance(fitness) in each species(cluster) will be removed and the new genomes produced by mutation or crossover will join the population (list of NN) in the species they belong to (or create a new species), then move forward to the next generation).
+
+![CatMario](https://github.com/jawadefaj/CatMario/blob/master/main/Capture.PNG)
+![CatMario](https://github.com/jawadefaj/CatMario/blob/master/main/temp.jpg)
